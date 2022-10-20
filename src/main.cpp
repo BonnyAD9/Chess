@@ -6,6 +6,7 @@ void DrawPiece(chess::Piece p);
 // u_c=i/C
 int main()
 {
+    std::cout << "\x1b[?1049h";
     chess::Board b;
     while (true)
     {
@@ -21,7 +22,7 @@ int main()
 
         std::cin >> from;
         if (from == "quit")
-            return EXIT_SUCCESS;
+            break;
 
         std::cin >> to;
 
@@ -33,6 +34,8 @@ int main()
 
         b.Move(chess::Position(from), chess::Position(to));
     }
+
+    std::cout << "\x1b[?1049l";
 }
 
 void DrawBoard(chess::Board &b)
