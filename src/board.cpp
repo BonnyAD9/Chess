@@ -141,21 +141,14 @@ namespace chess
 
     bool Board::_CanPawnMove(Position from, Position to)
     {
-        auto p = IsWhite(_At(from))
-            ? Position(0, 1)
-            : Position(0, -1);
+        auto p = Position(0, -1);
 
         if (to - from == p)
             return true;
 
         if (to - from == p * 2)
         {
-            if (!IsWhite(_At(from)))
-            {
-                if (from.GetY() != 6)
-                    return false;
-            }
-            else if (from.GetY() != 1)
+            if (from.GetY() != 6)
                 return false;
             return _At(from - p) != Piece::none;
         }
@@ -224,6 +217,8 @@ namespace chess
 
     Piece &Board::_At(int x, int y)
     {
-        return _board[x][y];
+        return IsWhite(_onTurn)
+            ? _board[7 - x][7 - y]
+            : _board[x][y];
     }
 } // namespace chess
