@@ -35,7 +35,6 @@ int main()
         b.Move(chess::Position(from), chess::Position(to));
     }
 
-    std::cout << "\x1b[?1049l";
 
     switch (b.GetWin())
     {
@@ -51,6 +50,10 @@ int main()
         break;
     }
 
+    std::cin.get();
+    std::cin.get();
+
+    std::cout << "\x1b[?1049l";
 }
 
 void DrawBoard(chess::Board &b)
