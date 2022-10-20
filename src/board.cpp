@@ -102,7 +102,7 @@ namespace chess
             return 0;
 
         if (!_CheckCheck(def))
-            return false;
+            return _CanKingUncheck(def) ? 0 : -1;
         _BackupBoard();
         auto ret = _CanKingUncheck(def);
         _ReloadBoard();
