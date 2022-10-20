@@ -8,7 +8,7 @@ int main()
 {
     std::cout << "\x1b[?1049h";
     chess::Board b;
-    while (true)
+    while (!b.GetWin())
     {
         std::cout << "\x1b[2J\x1b[H";
         DrawBoard(b);
@@ -36,6 +36,21 @@ int main()
     }
 
     std::cout << "\x1b[?1049l";
+
+    switch (b.GetWin())
+    {
+    case -1:
+        std::cout << "Tie!" << std::endl;
+        break;
+    case 1:
+        std::cout << (
+            chess::IsWhite(b.GetOnTurn())
+                ? "black won"
+                : "white won"
+        ) << std::endl;
+        break;
+    }
+
 }
 
 void DrawBoard(chess::Board &b)

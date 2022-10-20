@@ -5,6 +5,7 @@ Chess in console
 
 ## Todo
 - [X] Check for check
-- [ ] Check for win/tie
+- [X] Check for win
+- [ ] Check for tie
 - [ ] Castling
 - [X] Rotate board for the current player

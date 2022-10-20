@@ -14,10 +14,14 @@ namespace chess
         Piece GetOnTurn();
         bool Move(Position from, Position to);
         Piece Get(Position pos);
+        int GetWin();
     private:
         Piece _onTurn;
         bool _CheckCheck(Piece def);
-        bool _CheckCheckmate(Piece def);
+        int _CheckEnd(Piece def);
+        Position _FindPiece(Piece p);
+        bool _CanKingUncheck(Piece def);
+        bool _CanMoveUncheck(Position from);
         void _BackupBoard();
         void _ReloadBoard();
         bool _CanMove(Position from, Position to);
@@ -29,6 +33,7 @@ namespace chess
         bool _CanKingMove(Position from, Position to);
         Piece &_At(Position pos);
         Piece &_At(int x, int y);
+        int _win;
         std::array<std::array<Piece, 8>, 8> _board;
         std::array<std::array<Piece, 8>, 8> _cboard;
     };

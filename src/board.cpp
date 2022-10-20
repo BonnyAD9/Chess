@@ -2,13 +2,13 @@
 
 namespace chess
 {
-    Board::Board() : _onTurn(Piece::white), _board()
+    Board::Board() : _onTurn(Piece::white), _win(0), _board()
     {
         _board[0][0] = Piece::white_rook;
         _board[1][0] = Piece::white_knight;
         _board[2][0] = Piece::white_bishop;
-        _board[3][0] = Piece::white_queen;
-        _board[4][0] = Piece::white_king;
+        _board[3][0] = Piece::white_king;
+        _board[4][0] = Piece::white_queen;
         _board[5][0] = Piece::white_bishop;
         _board[6][0] = Piece::white_knight;
         _board[7][0] = Piece::white_rook;
@@ -28,8 +28,8 @@ namespace chess
         _board[0][7] = Piece::black_rook;
         _board[1][7] = Piece::black_knight;
         _board[2][7] = Piece::black_bishop;
-        _board[3][7] = Piece::black_queen;
-        _board[4][7] = Piece::black_king;
+        _board[3][7] = Piece::black_king;
+        _board[4][7] = Piece::black_queen;
         _board[5][7] = Piece::black_bishop;
         _board[6][7] = Piece::black_knight;
         _board[7][7] = Piece::black_rook;
@@ -57,6 +57,7 @@ namespace chess
             return false;
         }
         _onTurn = Other(_onTurn);
+        _win = _CheckEnd(_onTurn);
         return true;
     }
 
@@ -67,22 +68,14 @@ namespace chess
         return _At(pos);
     }
 
+    int Board::GetWin() { return _win; }
+
     bool Board::_CheckCheck(Piece def)
     {
-        Position pos{-1, -1};
-        for (int y = 0; y < 8; ++y)
-        {
-            for (int x = 0; x < 8; ++x)
-            {
-                if (GetType(_At(x, y)) == Piece::king &&
-                    IsWhite(_At(x, y)) == IsWhite(def))
-                {
-                    pos = Position(x, y);
-                    y = 8;
-                    break;
-                }
-            }
-        }
+        auto pos = _FindPiece(static_cast<Piece>(
+            static_cast<int>(Piece::king) |
+            static_cast<int>(def)
+        ));
 
         if (pos == Position(-1, -1))
             return false;
@@ -98,8 +91,65 @@ namespace chess
         return false;
     }
 
-    bool Board::_CheckCheckmate(Piece def)
+    int Board::_CheckEnd(Piece def)
     {
+        auto pos = _FindPiece(static_cast<Piece>(
+            static_cast<int>(Piece::king) |
+            static_cast<int>(def)
+        ));
+
+        if (pos == Position(-1, -1))
+            return 0;
+
+        if (!_CheckCheck(def))
+            return false;
+        _BackupBoard();
+        auto ret = _CanKingUncheck(def);
+        _ReloadBoard();
+        if (ret)
+            return 0;
+        return 1;
+    }
+
+    Position Board::_FindPiece(Piece p)
+    {
+        for (int y = 0; y < 8; ++y)
+        {
+            for (int x = 0; x < 8; ++x)
+            {
+                if (_At(x, y) == p)
+                    return Position(x, y);
+            }
+        }
+        return Position(-1, -1);
+    }
+
+    bool Board::_CanKingUncheck(Piece def)
+    {
+        for (int y = 0; y < 8; ++y)
+        {
+            for (int x = 0; x < 8; ++x)
+            {
+                _ReloadBoard();
+                if (IsWhite(def) == IsWhite(_At(x, y)) &&
+                    _CanMoveUncheck(Position(x, y)))
+                    return true;
+            }
+        }
+        return false;
+    }
+
+    bool Board::_CanMoveUncheck(Position from)
+    {
+        for (int y = 0; y < 8; ++y)
+        {
+            for (int x = 0; x < 8; ++x)
+            {
+                if (_CanMove(from, Position(x, y)) &&
+                    !_CheckCheck(static_cast<Piece>(IsWhite(_At(from)))))
+                    return true;
+            }
+        }
         return false;
     }
 
