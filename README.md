@@ -7,4 +7,4 @@ Chess in console
 - [X] Check for check
 - [ ] Check for win/tie
 - [ ] Castling
-- [ ] Flip board for the current player
+- [X] Rotate board for the current player
