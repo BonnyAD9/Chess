@@ -37,6 +37,7 @@ namespace chess
 
     bool Board::Move(Position from, Position to)
     {
+        _BackupBoard();
         if (to.GetX() > 7 || to.GetX() < 0 ||
             to.GetY() > 7 || to.GetY() < 0 ||
             from.GetX() > 7 || from.GetY() < 0 ||
@@ -50,6 +51,11 @@ namespace chess
 
         _At(to) = _At(from);
         _At(from) = Piece::none;
+        if (_CheckCheck(_onTurn))
+        {
+            _ReloadBoard();
+            return false;
+        }
         _onTurn = Other(_onTurn);
         return true;
     }
@@ -167,14 +173,13 @@ namespace chess
         if (abs(dif.GetX()) != abs(dif.GetY()))
             return false;
 
-        dif = dif / dif.GetX();
+        dif = dif / abs(dif.GetX());
 
-        do
+        for (from += dif; from != to; from += dif)
         {
-            from += dif;
             if (_At(from) != Piece::none)
                 return false;
-        } while (from != to);
+        }
 
         return true;
     }
@@ -191,12 +196,13 @@ namespace chess
         if (dif.GetX() != 0 && dif.GetY() != 0)
             return false;
 
-        do
+        dif = dif / abs(dif.GetX() + dif.GetY());
+
+        for (from += dif; from != to; from += dif)
         {
-            from += dif;
             if (_At(from) != Piece::none)
                 return false;
-        } while (from != to);
+        }
         return false;
     }
 
