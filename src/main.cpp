@@ -61,6 +61,10 @@ void DrawBoard(chess::Board &b)
     std::cout << "  ";
     for (int x = 0; x < 8; ++x)
         std::cout << chess::Position(x, 0).GetXChr() << ' ';
+
+    std::cout << "  ";
+    for (int x = 0; x < 8; ++x)
+        std::cout << chess::Position(x, 0).GetXChr() << ' ';
     std::cout << std::endl;
 
     for (int y = 0; y < 8; ++y)
@@ -71,18 +75,49 @@ void DrawBoard(chess::Board &b)
             if (x + y & 1)
             {
                 std::cout << "\x1b[0m";
-                DrawPiece(b.Get(chess::Position(x, y)));
+                DrawPiece(b.GetUnrot(x, y));
             }
             else
             {
                 std::cout << "\x1b[7m";
-                DrawPiece(chess::Other(b.Get(chess::Position(x, y))));
+                DrawPiece(chess::Other(b.GetUnrot(x, y)));
             }
-            if (x != 7 || y & 1)
+            if (x != 7)
                 std::cout << "▐";
+            if (x == 7)
+                std::cout << (y & 1 ? "▐\x1b[0m" : "\x1b[0m ");
         }
+
+        std::cout << chess::Position(0, y).GetYChr() << (y & 1 ? " " : "▐");
+        for (int x = 0; x < 8; ++x)
+        {
+            if (x + y & 1)
+            {
+                std::cout << "\x1b[0m";
+                DrawPiece(b.GetUnrot(7 - x, 7 - y));
+            }
+            else
+            {
+                std::cout << "\x1b[7m";
+                DrawPiece(chess::Other(b.GetUnrot(7 - x, 7 - y)));
+            }
+            if (x != 7)
+                std::cout << "▐";
+            if (x == 7)
+                std::cout << (y & 1 ? "▐\x1b[0m" : "\x1b[0m ");
+        }
+        std::cout << chess::Position(0, y).GetYChr();
         std::cout << "\x1b[0m" << std::endl;
     }
+
+    std::cout << "  ";
+    for (int x = 0; x < 8; ++x)
+        std::cout << chess::Position(x, 0).GetXChr() << ' ';
+
+    std::cout << "  ";
+    for (int x = 0; x < 8; ++x)
+        std::cout << chess::Position(x, 0).GetXChr() << ' ';
+    std::cout << std::endl;
 }
 
 void DrawPiece(chess::Piece p)

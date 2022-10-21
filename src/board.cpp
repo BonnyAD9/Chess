@@ -70,6 +70,8 @@ namespace chess
 
     int Board::GetWin() { return _win; }
 
+    Piece Board::GetUnrot(int x, int y) { return _board[x][y]; };
+
     bool Board::_CheckCheck(Piece def)
     {
         auto pos = _FindPiece(static_cast<Piece>(
@@ -101,9 +103,13 @@ namespace chess
         if (pos == Position(-1, -1))
             return 0;
 
-        if (!_CheckCheck(def))
-            return _CanKingUncheck(def) ? 0 : -1;
         _BackupBoard();
+        if (!_CheckCheck(def))
+        {
+            auto ret = _CanKingUncheck(def);
+            _ReloadBoard();
+            return ret ? 0 : -1;
+        }
         auto ret = _CanKingUncheck(def);
         _ReloadBoard();
         if (ret)
@@ -145,9 +151,13 @@ namespace chess
         {
             for (int x = 0; x < 8; ++x)
             {
-                if (_CanMove(from, Position(x, y)) &&
-                    !_CheckCheck(static_cast<Piece>(IsWhite(_At(from)))))
-                    return true;
+                if (_CanMove(from, Position(x, y)))
+                {
+                    _At(x, y) = _At(from);
+                    _At(from) = Piece::none;
+                    if (!_CheckCheck(static_cast<Piece>(IsWhite(_At(from)))))
+                        return true;
+                }
             }
         }
         return false;
@@ -246,7 +256,7 @@ namespace chess
             if (_At(from) != Piece::none)
                 return false;
         }
-        return false;
+        return true;
     }
 
     bool Board::_CanQueenMove(Position from, Position to)

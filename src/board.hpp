@@ -14,6 +14,7 @@ namespace chess
         Piece GetOnTurn();
         bool Move(Position from, Position to);
         Piece Get(Position pos);
+        Piece GetUnrot(int x, int y);
         int GetWin();
     private:
         Piece _onTurn;
